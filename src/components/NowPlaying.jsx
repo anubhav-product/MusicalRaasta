@@ -246,7 +246,7 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
                 className="rounded-full border px-4 py-1.5 text-[10px] tracking-[0.2em] uppercase transition-colors disabled:opacity-50"
                 style={{ borderColor: `${accent}66`, color: accent }}
               >
-                {upgrading ? 'Starting…' : 'Play full songs'}
+                {upgrading ? 'Loading full song…' : 'Play full songs'}
               </button>
             )}
             {canOfferFullSongs && (

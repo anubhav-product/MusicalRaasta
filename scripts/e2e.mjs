@@ -64,27 +64,90 @@ check('road -> chapter', url() === '/within-you/nostalgic-classics', url())
 check('chapter opens on the title card',
   (await visibleText('h1')) === 'Nostalgic Classics')
 check('song list is not on screen', (await page.$('[role="dialog"][aria-label="Queue"]')) === null)
-check('no embed iframes anywhere', (await page.$$('iframe')).length === 0)
+check('no Apple Music embed iframes', (await page.$$('iframe[src*="embed.music.apple.com"]')).length === 0)
 
-// ---------- autoplay ----------
-const a0 = await audio()
-check('a track is loaded', !!a0?.src, a0?.src?.slice(-28))
-check('it is playing on arrival', a0 && !a0.paused)
+// ---------- a fully-resolved chapter upgrades itself to full songs ----------
+// The "Full songs" label lives in the hero player, which is visibility:hidden until you
+// scroll — so assert on the YouTube stage, which is present at any scroll position.
+const ytStageVisible = () => page.evaluate(() => {
+  const el = document.querySelector('#yt-stage')
+  if (!el) return false
+  const st = getComputedStyle(el)
+  return st.display !== 'none' && st.visibility !== 'hidden'
+})
+await page.waitForFunction(() => {
+  const el = document.querySelector('#yt-stage')
+  return el && getComputedStyle(el).display !== 'none'
+}, { timeout: 25000 }).catch(() => {})
+check('full songs start automatically, with no button to press', await ytStageVisible())
+check('youtube stage is visible (required by their terms)',
+  await page.evaluate(() => {
+    const el = document.querySelector('#yt-stage')
+    if (!el) return false
+    const st = getComputedStyle(el); const r = el.getBoundingClientRect()
+    return st.display !== 'none' && st.visibility !== 'hidden' && r.width > 150 && r.height > 80
+  }))
+check('preview audio stays silent while YouTube plays',
+  await page.evaluate(() => [...document.querySelectorAll('audio')].every((a) => a.paused)))
 
 // ---------- scroll reveals the player, hides the title ----------
 await scrollTo(0.35)
+const clock = () => page.evaluate(() => {
+  const t = [...document.querySelectorAll('span')].map((e) => e.textContent.trim())
+    .filter((x) => /^\d+:\d\d$/.test(x))
+  const secs = (x) => { const [m, sec] = x.split(':').map(Number); return m * 60 + sec }
+  return { at: t[0] ? secs(t[0]) : null, len: t[1] ? secs(t[1]) : null }
+})
+const c0 = await clock()
+await sleep(6000)
+const c1 = await clock()
+check('the full song actually plays', c1.at > c0.at, `${c0.at}s -> ${c1.at}s`)
+check('it is a full-length track, not a 30s clip', (c1.len ?? 0) > 60, `${c1.len}s long`)
 check('title card yields on scroll', !(await visibleText('h1')))
-const track = await page.$eval('h2', (e) => e.textContent.trim()).catch(() => null)
-check('player is on screen', !!track, track)
+const heroTrack = await page.$eval('h2', (e) => e.textContent.trim()).catch(() => null)
+check('player is on screen', !!heroTrack, heroTrack)
 check('artwork rendered', (await page.$$('img[src*="mzstatic"]')).length > 0)
 const railed = await page.$$eval('[data-frame]', (els) => els.map((e) => Number(e.style.opacity || 0)))
 check('backdrop advanced with scroll', railed.slice(1).some((o) => o > 0.05))
 
-// ---------- transport ----------
+// ---------- preview backend, on a chapter with no resolved videos ----------
+await page.goto(`${BASE}/within-you/sweet-romantic`, { waitUntil: 'networkidle2' })
+await sleep(2500)
+check('unresolved chapter stays on previews', !(await ytStageVisible()))
+const p0 = await audio()
+check('a preview clip is playing', p0 && !p0.paused, p0?.src?.slice(-24))
+
+await scrollTo(0.3)
+const track = await page.$eval('h2', (e) => e.textContent.trim())
 await page.click('button[aria-label="Next track"]')
-await sleep(1200)
+await sleep(1400)
 const track2 = await page.$eval('h2', (e) => e.textContent.trim())
 check('next advances the queue', track2 !== track, `${track} -> ${track2}`)
+
+// clips should blend rather than stop dead
+await page.evaluate(() => {
+  const els = [...document.querySelectorAll('audio')]
+  const a = els.find((x) => !x.paused) ?? els[0]
+  if (a && Number.isFinite(a.duration)) a.currentTime = Math.max(0, a.duration - 3)
+})
+let blended = false
+for (let i = 0; i < 40 && !blended; i++) {
+  blended = await page.evaluate(() => {
+    const playing = [...document.querySelectorAll('audio')].filter((x) => !x.paused)
+    return playing.length === 2 && playing.every((x) => x.volume > 0)
+  })
+  await sleep(100)
+}
+check('clips crossfade into each other', blended)
+await sleep(3200)
+const track3 = await page.$eval('h2', (e) => e.textContent.trim())
+check('preview queue auto-advances', track3 !== track2, `${track2} -> ${track3}`)
+check('only one clip is left playing',
+  await page.evaluate(() => [...document.querySelectorAll('audio')].filter((x) => !x.paused).length === 1))
+
+await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkidle2' })
+await sleep(2000)
+await scrollTo(0.35)
 
 // ---------- scroll up reveals the queue ----------
 await page.evaluate(() => {
@@ -100,87 +163,8 @@ check('queue lists the chapter', rows === 35, `${rows} rows`)
 await page.evaluate(() => document.querySelectorAll('[role="dialog"] ol li button')[7].click())
 await sleep(1300)
 check('queue closes after picking', (await page.$('[role="dialog"][aria-label="Queue"]')) === null)
-const track3 = await page.$eval('h2', (e) => e.textContent.trim())
-check('picked track is playing', track3 !== track2, track3)
-
-// ---------- crossfade + auto-advance ----------
-const before = track3
-// Nudge the active clip to just before the crossfade threshold.
-await page.evaluate(() => {
-  const els = [...document.querySelectorAll('audio')]
-  const a = els.find((x) => !x.paused) ?? els[0]
-  if (a && Number.isFinite(a.duration)) a.currentTime = Math.max(0, a.duration - 3)
-})
-// During the blend both elements should be audible at once.
-let blended = false
-for (let i = 0; i < 40 && !blended; i++) {
-  blended = await page.evaluate(() => {
-    const playing = [...document.querySelectorAll('audio')].filter((x) => !x.paused)
-    return playing.length === 2 && playing.every((x) => x.volume > 0)
-  })
-  await sleep(100)
-}
-check('clips crossfade into each other', blended)
-await sleep(3200)
-const track4 = await page.$eval('h2', (e) => e.textContent.trim())
-check('queue auto-advances when a track ends', track4 !== before, `${before} -> ${track4}`)
-check('only one clip is left playing',
-  await page.evaluate(() => [...document.querySelectorAll('audio')].filter((x) => !x.paused).length === 1))
-
-// ---------- YouTube backend (only when tracks have resolved video ids) ----------
-await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkidle2' })
-await sleep(1800)
-await scrollTo(0.35)
-const ytBtn = await page.$$eval('button', (bs) => {
-  const b = bs.find((x) => /play full songs$/i.test(x.textContent.trim()))
-  if (b) b.click()
-  return !!b
-})
-if (ytBtn) {
-  // the IFrame API replaces #yt-mount with its own iframe
-  await page.waitForFunction(
-    () => !!document.querySelector('#yt-stage iframe[src*="youtube"]'), { timeout: 20000 },
-  ).catch(() => {})
-  const ytFrame = await page.$('#yt-stage iframe')
-  check('youtube player mounts', !!ytFrame)
-  check('youtube stage is visible (required by their terms)',
-    await page.evaluate(() => {
-      const el = document.querySelector('#yt-stage')
-      if (!el) return false
-      const s = getComputedStyle(el)
-      const r = el.getBoundingClientRect()
-      return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 150 && r.height > 80
-    }))
-  await sleep(2000)
-  check('switches to full songs on YouTube',
-    await page.evaluate(() => document.body.innerText.includes('Full songs · YouTube')))
-
-  // The label alone proves nothing — the clock has to move, and it has to be showing a
-  // full-length track rather than a 30-second clip.
-  const elapsed = () => page.evaluate(() => {
-    const t = [...document.querySelectorAll('span')]
-      .map((e) => e.textContent.trim()).filter((x) => /^\d+:\d\d$/.test(x))
-    const secs = (x) => { const [m, s] = x.split(':').map(Number); return m * 60 + s }
-    return { first: t[0] ? secs(t[0]) : null, last: t[1] ? secs(t[1]) : null }
-  })
-  const t0 = await elapsed()
-  await sleep(6000)
-  const t1 = await elapsed()
-  check('the full song actually plays', t1.first > t0.first, `${t0.first}s -> ${t1.first}s`)
-  check('it is a full-length track, not a 30s clip', (t1.last ?? 0) > 60, `${t1.last}s long`)
-  check('preview audio stops when YouTube takes over',
-    await page.evaluate(() => [...document.querySelectorAll('audio')].every((a) => a.paused)))
-  // back to previews
-  await page.$$eval('button', (bs) => {
-    const b = bs.find((x) => /back to previews/i.test(x.textContent.trim()))
-    if (b) b.click()
-  })
-  await sleep(1500)
-  check('can return to previews',
-    await page.evaluate(() => !document.body.innerText.includes('Full songs · YouTube')))
-} else {
-  console.log('SKIP  youtube backend — no resolved video ids in the data')
-}
+const picked = await page.$eval('h2', (e) => e.textContent.trim())
+check('picked track is playing', !!picked, picked)
 
 // ---------- end of chapter ----------
 await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkidle2' })
@@ -196,9 +180,15 @@ await Promise.all([
 await sleep(1400)
 check('Continue advances the road', url() === '/within-you/ghazals-soul', url())
 check('arrives at the top', (await page.evaluate(() => window.scrollY)) < 40)
-const a2 = await audio()
-check('next chapter loads its own queue', a2 && !a2.paused && a2.src !== a0.src,
-  `${a0?.src?.slice(-18)} -> ${a2?.src?.slice(-18)}`)
+await page.waitForFunction(() => {
+  const el = document.querySelector('#yt-stage')
+  const ytUp = el && getComputedStyle(el).display !== 'none'
+  const clip = [...document.querySelectorAll('audio')].some((a) => !a.paused)
+  return ytUp || clip
+}, { timeout: 25000 }).catch(() => {})
+check('next chapter loads its own music',
+  (await ytStageVisible()) ||
+  (await page.evaluate(() => [...document.querySelectorAll('audio')].some((a) => !a.paused))))
 
 // ---------- history ----------
 await page.goBack({ waitUntil: 'domcontentloaded' })

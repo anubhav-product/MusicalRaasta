@@ -403,10 +403,23 @@ export function PlayerProvider({ children }) {
     }
   }, [cancelFade])
 
+  // Full songs are the default wherever they exist. Autoplay is allowed because the
+  // click that navigated here counts as user activation; on a cold deep-link load the
+  // player falls back to a tap-to-start, exactly as the preview backend does.
+  const autoTried = useRef(new Set())
+  useEffect(() => {
+    if (!youtubeAvailable || backend !== 'preview' || upgrading) return
+    if (!queueKey || autoTried.current.has(queueKey)) return
+    autoTried.current.add(queueKey)
+    enableYouTube('yt-mount')
+  }, [youtubeAvailable, backend, upgrading, queueKey, enableYouTube])
+
   const disableYouTube = useCallback(() => {
     try { ytRef.current?.stopVideo?.() } catch { /* player already gone */ }
+    // Remember the choice for this chapter so the auto-upgrade does not undo it.
+    if (queueKey) autoTried.current.add(queueKey)
     setBackend('preview')
-  }, [])
+  }, [queueKey])
 
   // Load whichever track is current into the YouTube player.
   useEffect(() => {

@@ -422,6 +422,18 @@ function RoadPanel({ road, index, reduced }) {
             }}
           />
         )}
+        {/* A neutral plinth under the copy. The palette scrim above carries the road's
+            colour, but on a narrow screen the panel is short enough that the blurb and
+            the stop names land on whatever the photograph is doing — a lit dome, a blown
+            sky — and a tint alone will not hold them. */}
+        <span
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-3/5"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(6,5,8,0) 0%, rgba(6,5,8,0.42) 38%, rgba(6,5,8,0.8) 100%)',
+          }}
+        />
         <span
           aria-hidden
           className="absolute inset-x-0 bottom-0 h-[3px] origin-left transition-transform duration-700 ease-out"
