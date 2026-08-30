@@ -223,14 +223,15 @@ function Threshold({ reduced, totals }) {
  */
 const TRAVELLER = (
   <>
-    {/* shoulders and torso, tapering up to the neck */}
-    <path d="M60 64 C44 64 34 72 30 84 C26.5 94 25.5 112 25 150 L95 150 C94.5 112 93.5 94 90 84 C86 72 76 64 60 64 Z" />
-    <rect x="54" y="53" width="12" height="12" />
-    <circle cx="60" cy="41" r="16" />
-    {/* the headband, as a filled arc so it takes the same rim light as the rest */}
-    <path d="M39 44 A21 21 0 0 1 81 44 L75.5 44 A15.5 15.5 0 0 0 44.5 44 Z" />
-    <rect x="32.5" y="35" width="11.5" height="18" rx="5.5" />
-    <rect x="76" y="35" width="11.5" height="18" rx="5.5" />
+    {/* Sloped shoulders running out to rounded deltoids, then straight down. Rounding the
+        whole torso instead reads as a chess pawn rather than a person. */}
+    <path d="M23 150 L26 96 C26 81 36 72 47 69 C51 68 55.5 67 60 67 C64.5 67 69 68 73 69 C84 72 94 81 94 96 L97 150 Z" />
+    <path d="M53 48 L67 48 L69 67 C66 65.5 63 65 60 65 C57 65 54 65.5 51 67 Z" />
+    <ellipse cx="60" cy="38" rx="15" ry="17" />
+    {/* the headband, as a filled arc so it takes the same rim light as everything else */}
+    <path d="M38 40 A22 22 0 0 1 82 40 L77 40 A17 17 0 0 0 43 40 Z" />
+    <rect x="33" y="31" width="14" height="24" rx="7" />
+    <rect x="73" y="31" width="14" height="24" rx="7" />
   </>
 )
 
@@ -239,7 +240,7 @@ function Traveller({ reduced }) {
     <motion.svg
       viewBox="0 0 120 150"
       aria-hidden
-      className="relative z-10 h-32 w-auto sm:h-36"
+      className="relative z-10 h-40 w-auto sm:h-48"
       initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-15% 0px' }}
@@ -249,7 +250,7 @@ function Traveller({ reduced }) {
         {/* he stands in the dark from the waist down rather than being cut off by an edge */}
         <linearGradient id="traveller-fade" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#fff" stopOpacity="1" />
-          <stop offset="62%" stopColor="#fff" stopOpacity="1" />
+          <stop offset="68%" stopColor="#fff" stopOpacity="1" />
           <stop offset="100%" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
         <mask id="traveller-mask">

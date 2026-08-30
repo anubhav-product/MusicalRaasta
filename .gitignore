@@ -21,3 +21,4 @@ dist-ssr
 youtube-review.html
 !.env.example
 .cache
+scripts/_*.mjs

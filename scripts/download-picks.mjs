@@ -16,7 +16,7 @@ picks.forEach((idx, i) => {
   const c = candidates[idx]
   if (!c) throw new Error(`no candidate at index ${idx}`)
   const file = `${dest}/${String(i + 1).padStart(2, '0')}.jpg`
-  const url = `${c.raw}&w=1800&h=1200&fit=crop&crop=entropy&fm=jpg&q=76`
+  const url = `${c.raw}&w=1920&h=1280&fit=crop&crop=entropy&fm=jpg&q=86`
   execFileSync('curl', ['-sL', '--max-time', '60', '-o', file, url])
   credits.push({ file: `${String(i + 1).padStart(2, '0')}.jpg`, id: c.id, color: c.color, photographer: c.user, alt: c.alt, source: `https://unsplash.com/photos/${c.id}` })
   console.log(`${file}  <- ${c.id} ${c.color} ${c.user}`)

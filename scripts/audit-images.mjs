@@ -2,7 +2,7 @@
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 
 const roots = ['src/assets/images/within-you', 'src/assets/images/for-fun']
-const works = ['/tmp/curation', '/tmp/curation-ff', '/tmp/curation-ff2']
+const works = ['/tmp/curation', '/tmp/curation-ff', '/tmp/curation-ff2', '/tmp/curation-wy2']
 let bad = 0, checked = 0, unknown = 0
 
 for (const root of roots) {
