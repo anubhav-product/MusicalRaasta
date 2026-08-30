@@ -20,7 +20,7 @@ An unknown chapter slug redirects to that road's table of contents.
 
 ## The landing page
 
-The landing page is the prologue of the journey, not a menu in front of it — four
+The landing page is the prologue of the journey, not a menu in front of it — five
 movements you scroll through in order, in `src/pages/Landing.jsx`:
 
 1. **The threshold.** A moodboard of every chapter's photography drifting behind the
@@ -41,7 +41,30 @@ movements you scroll through in order, in `src/pages/Landing.jsx`:
    hover.
 3. **The stops.** All twelve rooms as a pinboard you can walk straight into, skipping the
    fork entirely.
-4. **The dedication.**
+4. **The name.** What the site is called and why, set as a dictionary entry: रास्ता is the
+   road it is built as, अनुभव is the Hindi word for experience — and the name of the person
+   whose experience picked every song. It sits here rather than at the top because it is
+   the answer to the question the wall of stops raises: who chose all of that, and on what
+   authority. The byline is repeated at the end of each road (`src/pages/EndPage.jsx`),
+   since a deep link can drop a visitor onto a stop without their ever seeing this page.
+   The name lives in one place, `SITE.author` in `src/lib/roads.js`, in both scripts — the
+   Devanagari is the name and the roman spelling only the gloss, so wherever both appear
+   the Devanagari is the one set larger.
+
+   It is the one fully bilingual passage on the site: Hindi first and English under it, in
+   the same order as every stop's title. Running Hindi is set in Mukta (`--font-deva-text`)
+   rather than the Rozha One used for the names — Rozha is a display face and goes muddy at
+   paragraph sizes, and the two were drawn as a pair, so the headword and the prose still
+   look related. The two languages are told apart by face and colour; what pairs them is
+   spacing, so the gap inside a passage must stay clearly smaller than the gap between two.
+
+Everything is client-rendered, so `index.html` is the only markup a crawler is guaranteed
+to see before it runs any JavaScript. The description, Open Graph, and `WebSite`/`Person`
+JSON-LD therefore state the whole premise in English there rather than leaving it to the
+page — which is the other reason the name section carries an English translation instead
+of Hindi alone. The canonical URL in that file is the GitHub Pages project site the
+workflow publishes to; it is the one line to change if the deploy target moves.
+5. **The dedication.**
 
 Everything on it is built from the real backdrops and the real song counts, so the page
 is a view of the thing rather than an advertisement for it.
@@ -192,6 +215,26 @@ videos. YouTube's terms require the video player be visible rather than used as 
 audio source, so it appears as a small persistent card above the mini player, and stays
 mounted so a song is not cut off by scrolling. "Back to previews" returns to the clip mix.
 A blocked or removed video skips to the next track instead of stalling the queue.
+
+## The voice
+
+Every stop is a feeling somebody arrived with, so the copy's job is recognition, not
+description. The rule for anything visitor-facing: lead with a specific thing the reader
+has actually *done* in that state — opening the chat and closing it again without typing
+anything; saying you were not going to dance and then dancing — rather than with the
+colour of the room. An atmosphere is admired from outside; a behaviour is recognised from
+inside, and recognition is what makes somebody feel the stop is about them. Small and
+slightly private beats grand and universal, because everyone quietly believes they are
+the only one who does it.
+
+Second person throughout, and no contractions — it is the register the whole site is
+written in. Keep enough of the sensory grade to match the photography a stop is paired
+with, but let it arrive second.
+
+Chapter copy lives in **two** places that must not drift: `scripts/build-data.mjs` holds
+chapter identity and is the source of truth, and `src/data/*-songs.json` is what the app
+actually reads. Editing only the JSON means the next `npm run data` silently reverts it,
+so change both.
 
 ## The two roads are deliberately different
 

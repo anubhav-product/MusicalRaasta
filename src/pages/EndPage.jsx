@@ -23,8 +23,8 @@ export default function EndPage({ roadId }) {
 
   const closing =
     roadId === 'within-you'
-      ? 'That was the whole of it — the sepia, the midnight, the rain, the gold, the noise, and the songs somebody handed you through one earphone. Play it again whenever you like.'
-      : 'Windows up. Ears ringing. That was every drop, every dusty bass line and one long amber highway to come down on. The road is still here when you want it loud again.'
+      ? 'That was all of it — what you inherited, what keeps you up, what broke, what stayed, and the songs somebody handed you through one earphone. Nothing here got fixed, and nothing here was ever supposed to. But you sat with it a while, and that counts for something. Come back whenever the hour gets late again.'
+      : 'Ears ringing, voice gone, completely fine. That was every drop, every dusty bass line, and one long amber highway to come down on. Nothing got solved and nothing needed to be. The road is still here the next time you need out of your own head.'
 
   return (
     <main className="relative flex min-h-svh flex-col justify-center overflow-hidden px-5 py-24 sm:px-8">
@@ -92,16 +92,18 @@ export default function EndPage({ roadId }) {
           {/* The byline belongs at the end of the road as well as on the landing page:
               a deep link drops you straight onto a stop, so this may be the only place a
               given visitor ever learns whose experience picked all of it. */}
-          <p className="flex items-center justify-center gap-2.5 text-[10px] tracking-[0.26em] uppercase text-white/30">
+          <p className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 text-[10px] tracking-[0.26em] uppercase text-white/45">
             Curated by
+            {/* The lighter of the stop's two accents, not the signature: several roads end
+                on a deep signature that leaves Devanagari muddy against their own light. */}
             <span
               lang="hi"
-              className="font-deva text-xl normal-case tracking-normal"
-              style={{ color: signature }}
+              className="font-deva text-2xl leading-none normal-case tracking-normal"
+              style={{ color: accent }}
             >
               {SITE.author.deva}
             </span>
-            <span className="tracking-[0.26em]">{SITE.author.name}</span>
+            <span>{SITE.author.name}</span>
           </p>
         </motion.div>
 

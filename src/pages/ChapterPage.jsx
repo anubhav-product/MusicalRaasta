@@ -24,7 +24,7 @@ export default function ChapterPage({ roadId }) {
   const road = getRoad(roadId)
   const chapter = getChapter(roadId, chapterSlug)
   const reduced = usePrefersReducedMotion()
-  const { loadQueue } = usePlayer()
+  const { loadQueue, nudge, toggle, volume, setVolume, next: playNext, prev: playPrev } = usePlayer()
 
   const [progress, setProgress] = useState(0)
   const [queueOpen, setQueueOpen] = useState(false)
@@ -57,17 +57,31 @@ export default function ChapterPage({ roadId }) {
     window.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' })
   }, [imageCount, reduced])
 
-  // Left/right steps the imagery; space toggles playback.
+  // Standard music-player keys. The imagery is stepped with the on-screen chevrons, so
+  // the arrows can do what they do in every other player.
   useEffect(() => {
     if (queueOpen) return
     const onKey = (e) => {
+      // Typing must never be hijacked. A focused button only blocks Space, which would
+      // otherwise both press the button and toggle playback.
       if (e.target.closest?.('input, textarea, [contenteditable]')) return
-      if (e.key === 'ArrowRight') { e.preventDefault(); goToImage(imageIndex + 1) }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); goToImage(imageIndex - 1) }
+      if (e.key === ' ' && e.target.closest?.('a, button')) return
+      switch (e.key) {
+        case 'ArrowRight': e.preventDefault(); nudge(10); break
+        case 'ArrowLeft': e.preventDefault(); nudge(-10); break
+        case 'ArrowUp': e.preventDefault(); setVolume(volume + 0.05); break
+        case 'ArrowDown': e.preventDefault(); setVolume(volume - 0.05); break
+        case ' ': e.preventDefault(); toggle(); break
+        case 'n': playNext(); break
+        case 'p': playPrev(); break
+        case ']': goToImage(imageIndex + 1); break
+        case '[': goToImage(imageIndex - 1); break
+        default: break
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [goToImage, imageIndex, queueOpen])
+  }, [goToImage, imageIndex, queueOpen, nudge, setVolume, volume, toggle, playNext, playPrev])
 
   if (!chapter) return <Navigate to={road.base} replace />
 

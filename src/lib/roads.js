@@ -26,7 +26,7 @@ export const ROADS = {
     title: withinYou.title,
     tagline: withinYou.tagline ?? 'the slow road',
     blurb:
-      'Six stops through the music you play when nobody is watching. Nostalgia, devotion, rain, tenderness, noise, and the songs somebody else handed you.',
+      'The music you only play when nobody is watching. Six stops for the feelings you do not announce — what you inherited, what keeps you up at two in the morning, what broke, what stayed, what you celebrated, and everything somebody else handed you.',
     motion: 'drift',
     palette: ['#1a120c', '#c98a4b', '#e8d3ab'],
     chapters: withinYou.chapters,
@@ -37,7 +37,7 @@ export const ROADS = {
     title: forFun.title,
     tagline: forFun.tagline ?? 'the loud road',
     blurb:
-      'Six stops with the windows down and the volume wrong. Dance floors, chrome, dust, lasers, and one long highway to cool off on.',
+      'The music for getting out of your own head. Six stops where nothing needs explaining and nothing needs fixing — floors, chrome, red dust, lasers, and one long amber highway to come down on when your ears are ringing.',
     motion: 'cut',
     palette: ['#12030c', '#ff2e88', '#ffd166'],
     chapters: forFun.chapters,

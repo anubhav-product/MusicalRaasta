@@ -7,7 +7,7 @@
       "slug": "nostalgic-classics",
       "name": "Nostalgic Classics",
       "kicker": "Stop one",
-      "description": "Golden-era voices carried on tape hiss and warm sepia — songs older than the people who love them, playing from a room down the hall.",
+      "description": "Somebody older than you played these first, on a Sunday morning, while you were still too young to care. Now four bars come on in a shop somewhere and you are eight again in the back of a car that no longer exists — and you could not explain to anyone standing near you why your throat has gone tight.",
       "order": 1,
       "suggestedPalette": [
         "#2a1c10",
@@ -587,7 +587,7 @@
       "slug": "ghazals-soul",
       "name": "Ghazals & Soul",
       "kicker": "Stop two",
-      "description": "The hour after midnight, when the music stops asking for anything. Ink-blue courtyards, one held note, a devotion with no address on it.",
+      "description": "Past two, the house finally quiet, and you are not sad exactly — you just do not want to be spoken to. These are for the version of you that nobody else gets to meet: the one who sits in the dark and lets a single held note say the thing you have never once managed to say out loud.",
       "order": 2,
       "suggestedPalette": [
         "#171426",
@@ -1083,7 +1083,7 @@
       "slug": "heartbreak-longing",
       "name": "Heartbreak & Longing",
       "kicker": "Stop three",
-      "description": "The long stretch of the road where it rains the whole way. Everything is grey-blue and slightly out of reach, and you play it anyway.",
+      "description": "You have opened the chat and closed it again without typing anything. You know exactly what this song is going to do to you, and you are going to play it anyway, because tonight the only thing that helps is something that hurts in the same shape. Nobody gets over it in a straight line. This stop is not going to ask you to.",
       "order": 3,
       "suggestedPalette": [
         "#0e141b",
@@ -2203,7 +2203,7 @@
       "slug": "sweet-romantic",
       "name": "Sweet & Romantic",
       "kicker": "Stop four",
-      "description": "The light comes back low and gold. Nothing dramatic happens — only the ordinary, enormous fact of someone being there.",
+      "description": "Not the confession and not the wedding — the Tuesday. Someone asleep on your shoulder on a late bus, or laughing far too hard at something that was not funny, and you catching yourself thinking: oh. It is this. The ordinary, enormous fact of a person being there.",
       "order": 4,
       "suggestedPalette": [
         "#2b1a1a",
@@ -3207,7 +3207,7 @@
       "slug": "peppy-celebratory",
       "name": "Peppy & Celebratory",
       "kicker": "Stop five",
-      "description": "Marigold, loudspeakers, dust in the sun. The songs you cannot sit still through, played too loud, on purpose.",
+      "description": "You said you were not going to dance. Then somebody’s cousin put this on, the whole room went up on the same beat, and there you were — off-step, sweating, completely happy. Play it too loud; that is the correct volume.",
       "order": 5,
       "suggestedPalette": [
         "#39190a",
@@ -3595,7 +3595,7 @@
       "slug": "shared-earphones",
       "name": "Shared Earphones",
       "kicker": "Last stop",
-      "description": "Borrowed songs — the ones that arrived through someone else’s speaker. Hostel corridors, car aux cables, one earphone each. Not nostalgia for a time before you: nostalgia for the one that was yours.",
+      "description": "Somebody pulled out an earphone, handed you one side, and said just listen to this bit. You have kept the song longer than you kept them. Everything here arrived through another person — a hostel corridor, an aux cable, a bus seat — and still carries a little of whoever passed it on.",
       "order": 6,
       "suggestedPalette": [
         "#0b1024",

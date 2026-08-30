@@ -4,11 +4,63 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MusicalRaasta — दो रास्ते, एक प्लेलिस्ट</title>
+    <title>Musical Raasta · म्यूज़िकल रास्ता — songs for every stage of life</title>
+
+    <!--
+      This is a client-rendered SPA, so this shell is the only markup a crawler is
+      guaranteed to see before it runs any JavaScript. Everything a search engine needs
+      to describe the site therefore has to be stated here in English, in full, rather
+      than left to the page to render — which is also why the name section on the landing
+      page carries an English translation beside its Hindi rather than Hindi alone.
+
+      One URL to change if the deploy target moves: DEPLOY_URL below is the GitHub Pages
+      project site the workflow in .github/workflows publishes to.
+    -->
+    <meta
+      name="description"
+      content="A musical journey through the stages of life: two roads, twelve moods, 547 songs. Whatever you are feeling today, there is a song here for it. Curated by Anubhav."
+    />
+    <meta name="author" content="Anubhav" />
+    <link rel="canonical" href="https://anubhav-product.github.io/MusicalRaasta/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Musical Raasta" />
+    <meta property="og:url" content="https://anubhav-product.github.io/MusicalRaasta/" />
+    <meta property="og:title" content="Musical Raasta — songs for every stage of life" />
+    <meta
+      property="og:description"
+      content="Two roads, one playlist. A musical journey through the stages of life, curated by Anubhav — अनुभव, the Hindi word for experience."
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="hi_IN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Musical Raasta — songs for every stage of life" />
+    <meta
+      name="twitter:description"
+      content="Two roads, one playlist. A musical journey through the stages of life, curated by Anubhav — अनुभव, the Hindi word for experience."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Musical Raasta",
+        "alternateName": "म्यूज़िकल रास्ता",
+        "url": "https://anubhav-product.github.io/MusicalRaasta/",
+        "inLanguage": ["en", "hi"],
+        "description": "A musical journey through the stages of life. Two roads and twelve moods of curated songs — whatever you are feeling today, there is a song here for it.",
+        "author": {
+          "@type": "Person",
+          "name": "Anubhav",
+          "alternateName": "अनुभव",
+          "description": "Anubhav — अनुभव is the Hindi word for experience. Every song on Musical Raasta was chosen from his own."
+        }
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Rozha+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Mukta:wght@300;400;500&family=Rozha+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>

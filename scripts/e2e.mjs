@@ -178,14 +178,30 @@ await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkid
 await sleep(2000)
 await scrollTo(0.4)
 const beforeY = await page.evaluate(() => window.scrollY)
-await page.keyboard.press('ArrowRight')
-await sleep(1400)
+const clickImg = (label) => page.$$eval('button', (bs, l) => {
+  const b = bs.find((x) => new RegExp(l, 'i').test(x.getAttribute('aria-label') || ''))
+  if (b) b.click()
+  return !!b
+}, label)
+check('image chevrons exist', await clickImg('next image'))
+await sleep(1500)
 const afterY = await page.evaluate(() => window.scrollY)
-check('right arrow advances the imagery', afterY > beforeY, `${beforeY} -> ${afterY}`)
-await page.keyboard.press('ArrowLeft')
-await sleep(1400)
-check('left arrow goes back',
+check('next-image control advances the imagery', afterY > beforeY, `${beforeY} -> ${afterY}`)
+await clickImg('previous image')
+await sleep(1500)
+check('previous-image control goes back',
   (await page.evaluate(() => window.scrollY)) < afterY)
+
+// arrows now seek the track, as in any music player
+const volBefore = await page.evaluate(() => document.querySelector('input[aria-label="Volume"]')?.value)
+await page.keyboard.press('ArrowDown')
+await sleep(400)
+check('down arrow lowers the volume',
+  (await page.evaluate(() => document.querySelector('input[aria-label="Volume"]')?.value)) < volBefore)
+await page.keyboard.press('ArrowUp')
+await sleep(400)
+check('up arrow raises it back',
+  (await page.evaluate(() => document.querySelector('input[aria-label="Volume"]')?.value)) >= volBefore)
 check('the control legend is on screen',
   await page.$$eval('button', (bs) => bs.some((b) => /previous image/i.test(b.getAttribute('aria-label') || ''))))
 check('there is a 10-second skip control',

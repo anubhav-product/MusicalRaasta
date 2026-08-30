@@ -183,8 +183,9 @@ function Threshold({ reduced, totals }) {
         transition={{ delay: 0.62, duration: 0.9 }}
         className="mx-auto mt-11 max-w-lg text-base leading-relaxed text-white/70 sm:text-lg"
       >
-        One goes quiet and inward. One goes loud and fast. Both end up in the same place —
-        and you can always come back to the fork.
+        One road goes quiet and asks you to feel it. One goes loud and lets you put it down
+        for a while. Neither is the braver choice — some nights you need one, some nights the
+        other, and you can always come back for the one you left.
       </motion.p>
 
       <motion.dl
@@ -534,7 +535,7 @@ function Fork({ reduced }) {
         >
           <p className="text-[10px] tracking-[0.4em] uppercase text-white/40">The fork</p>
           <h2 className="mt-4 font-display text-4xl leading-tight sm:text-6xl">
-            Pick a <span className="italic text-[#e8d3ab]">direction</span>
+            What do you need <span className="italic text-[#e8d3ab]">today</span>?
           </h2>
         </motion.div>
 
@@ -721,8 +722,8 @@ function StopWall({ reduced, totals }) {
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-white/55">
-            Or skip the fork entirely and walk straight into any one of them. Every stop is its
-            own page, with its own light.
+            Or skip the fork and go straight to the feeling you arrived with. Every stop is its
+            own room with its own light, and you are not required to start at the beginning.
           </p>
         </motion.div>
 
@@ -750,6 +751,25 @@ function StopWall({ reduced, totals }) {
  * this is the answer to the question that raises — who decided all of that, and on what
  * authority — and the last thing you read before the dedication hands you the road.
  */
+/**
+ * Hindi over English, the way every other title on the site is set. The Hindi is the
+ * original and the English the translation under it, not two designs of equal weight —
+ * but the English is real text in the DOM rather than an image or an attribute, because
+ * it is also the only description of this site a search engine can read.
+ */
+function Passage({ hi, en }) {
+  return (
+    <div>
+      <p lang="hi" className="font-deva-text text-lg leading-[1.95] text-[#e8d3ab]/90 sm:text-xl">
+        {hi}
+      </p>
+      <p lang="en" className="mt-3.5 text-[15px] leading-relaxed text-white/60 sm:text-base">
+        {en}
+      </p>
+    </div>
+  )
+}
+
 function Signature({ reduced }) {
   const rise = (delay) => ({
     initial: reduced ? { opacity: 0 } : { opacity: 0, y: 20 },
@@ -759,7 +779,7 @@ function Signature({ reduced }) {
   })
 
   return (
-    <section className="relative px-6 py-20 sm:px-12 sm:py-28">
+    <section id="the-name" className="relative px-6 py-20 sm:px-12 sm:py-28">
       {/* Both roads' light, met halfway: this is the one part of the site that belongs to
           neither of them, so it takes a little of each instead of picking a side. */}
       <div
@@ -772,57 +792,63 @@ function Signature({ reduced }) {
       />
 
       <div className="mx-auto max-w-2xl text-center">
-        <motion.p
-          {...rise(0)}
-          className="text-[10px] tracking-[0.4em] uppercase text-white/40"
-        >
-          Why it is called this
+        <motion.p {...rise(0)} className="flex flex-wrap items-baseline justify-center gap-x-3">
+          <span lang="hi" className="font-deva text-xl text-[#fbbf24] sm:text-2xl">
+            नाम की कहानी
+          </span>
+          <span className="text-[10px] tracking-[0.4em] uppercase text-white/40">
+            Why it is called this
+          </span>
         </motion.p>
 
-        {/* The headword, set as an entry out of a dictionary — the name and its meaning
-            are the same word, and seeing it defined is what makes that land. */}
+        {/* The headword, set as an entry out of a dictionary — the name and its meaning are
+            the same word, and seeing it defined is what makes that land. The definition is
+            given twice for the same reason the rest of the section is. */}
         <motion.figure {...rise(0.08)} className="mt-9 border-y border-white/10 py-9 sm:py-11">
-          <p
+          <h2
             lang="hi"
             className="font-deva text-6xl leading-none sm:text-8xl"
             style={{ color: '#fbbf24' }}
           >
             अनुभव
-          </p>
+          </h2>
           <p className="mt-5 font-mono text-[11px] tracking-[0.24em] uppercase text-white/40">
             anubhav
             <span aria-hidden className="mx-2 text-white/20">·</span>
             <span className="normal-case italic tracking-normal">noun, Hindi</span>
           </p>
-          <figcaption className="mx-auto mt-4 max-w-md font-display text-2xl italic leading-snug text-white/80 sm:text-3xl">
-            experience — what you have lived through, and what it left behind in you
+          <figcaption className="mx-auto mt-5 max-w-md">
+            <p lang="hi" className="font-deva-text text-xl leading-[1.8] text-[#e8d3ab] sm:text-2xl">
+              जो तुमने जिया है, और जो वह तुम्हारे भीतर छोड़ गया।
+            </p>
+            <p lang="en" className="mt-3 font-display text-2xl italic leading-snug text-white/75 sm:text-3xl">
+              experience — what you have lived through, and what it left behind in you
+            </p>
           </figcaption>
         </motion.figure>
 
-        <motion.div
-          {...rise(0.16)}
-          className="mx-auto mt-10 max-w-xl space-y-5 text-base leading-relaxed text-white/70 sm:text-lg"
-        >
-          <p>
-            <span lang="hi" className="font-deva text-xl text-[#e8d3ab] sm:text-2xl">रास्ता</span>{' '}
-            is the road.{' '}
-            <span lang="hi" className="font-deva text-xl text-[#e8d3ab] sm:text-2xl">अनुभव</span>{' '}
-            is what you gather while you walk it. Musical Raasta is both — a journey through
-            the stages of a life, where the question is never what is popular but what you
-            are feeling today, and which song you need for it.
-          </p>
-          <p>
-            Nothing here came off a chart. Every stop is a mood I have actually stood in, and
-            every song on it was chosen the way you would choose one for yourself: by what it
-            felt like to need it. That experience is the entire curation — and it is also,
-            as it happens, my name.
-          </p>
+        {/* The gap between two passages has to be clearly larger than the gap inside one,
+            or the English reads as the next paragraph rather than as the same paragraph
+            again. Face and colour separate them; spacing is what pairs them. */}
+        <motion.div {...rise(0.16)} className="mx-auto mt-10 max-w-xl space-y-14 text-left sm:text-center">
+          <Passage
+            hi="रास्ता यानी सड़क। अनुभव यानी वह सब जो उस सड़क पर चलते हुए तुम्हारे साथ जुड़ता जाता है। म्यूज़िकल रास्ता दोनों है — ज़िंदगी के हर पड़ाव से गुज़रता हुआ एक सफ़र, जहाँ सवाल यह नहीं कि आजकल क्या चल रहा है, बल्कि यह कि आज तुम्हें कैसा लग रहा है, और उस पर कौन-सा गाना बैठता है।"
+            en="Raasta is the road. Anubhav is what you gather while you walk it. Musical Raasta is both — a journey through the stages of a life, where the question is never what is popular but what you are feeling today, and which song you need for it."
+          />
+          <Passage
+            hi="यहाँ कुछ भी किसी चार्ट से नहीं आया। हर पड़ाव एक ऐसा मूड है जिसमें मैं ख़ुद खड़ा रहा हूँ, और हर गाना ठीक वैसे चुना गया जैसे तुम अपने लिए चुनते — इस बात से कि उसकी ज़रूरत कैसी महसूस हुई थी। वही अनुभव इस पूरी फ़ेहरिस्त का इकलौता आधार है — और इत्तेफ़ाक़ से, मेरा नाम भी।"
+            en="Nothing here came off a chart. Every stop is a mood I have actually stood in, and every song on it was chosen the way you would choose one for yourself: by what it felt like to need it. That experience is the entire curation — and it is also, as it happens, my name."
+          />
         </motion.div>
 
         {/* Signed like a letter: the Devanagari is the name, the roman only the gloss. */}
         <motion.div {...rise(0.24)} className="mt-12 flex flex-col items-center">
           <span aria-hidden className="hairline h-px w-24" />
-          <span className="mt-6 text-[10px] tracking-[0.34em] uppercase text-white/35">
+          <span className="mt-6 flex flex-wrap items-baseline justify-center gap-x-2.5 text-[10px] tracking-[0.34em] uppercase text-white/35">
+            <span lang="hi" className="font-deva-text text-sm normal-case tracking-normal">
+              चयन
+            </span>
+            <span aria-hidden className="text-white/20">·</span>
             Curated by
           </span>
           <span
@@ -843,9 +869,14 @@ function Signature({ reduced }) {
 
 /* ------------------------------------------------------------------ movement V */
 
+/**
+ * The last word on the page. The section above already says what Musical Raasta is, names
+ * अनुभव and signs it — so this only closes: the scale of the thing, and who it is for.
+ * Saying the name a third time here would flatten the signature above it.
+ */
 function Dedication({ reduced, totals }) {
   return (
-    <section className="relative px-6 pb-24 pt-0 text-center sm:px-12 sm:pb-28">
+    <section className="relative px-6 pb-24 pt-4 text-center sm:px-12 sm:pb-28">
       <div className="mx-auto max-w-xl">
         <div aria-hidden className="hairline mx-auto h-px w-40" />
         <motion.p
@@ -853,13 +884,13 @@ function Dedication({ reduced, totals }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-15% 0px' }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 font-display text-2xl italic leading-relaxed text-white/70 sm:text-3xl"
+          className="mt-10 font-display text-2xl italic leading-relaxed text-white/75 sm:text-3xl"
         >
-          {totals.songs} songs, collected and put in an order that means something.
-          Built for {SITE.title} — take whichever road you need today.
+          {totals.songs} songs across {totals.stops} stops, put in the order a life actually
+          happens in. Take whichever road you need tonight — the other one keeps.
         </motion.p>
         <p className="mt-10 text-[10px] tracking-[0.32em] uppercase text-white/30">
-          Two roads · one playlist
+          Two roads · one playlist · for {SITE.title}
         </p>
       </div>
     </section>

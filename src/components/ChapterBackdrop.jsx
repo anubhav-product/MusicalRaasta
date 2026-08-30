@@ -124,7 +124,10 @@ export default function ChapterBackdrop({ images, palette, mode = 'drift', onPro
   const signature = palette?.[1] ?? '#c98a4b'
   // Enough scroll track to give every frame room to land, and to make reaching the end
   // of a chapter feel like distance covered.
-  const trackVh = Math.max(300, (images.length || 6) * 55)
+  // How far you travel to cross one stop. At 55vh an image this was 550vh — five and a
+  // half screens of scrolling per chapter, twelve chapters over, just to reach Continue.
+  // 32vh keeps the imagery moving at a cinematic rate and cuts the effort by about 40%.
+  const trackVh = Math.max(260, (images.length || 6) * 32)
 
   return (
     <div ref={trackRef} className="relative" style={{ height: `${trackVh}vh` }}>

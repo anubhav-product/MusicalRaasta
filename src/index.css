@@ -5,6 +5,10 @@
   --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   /* Devanagari-capable display face, for the Hindi name each stop also carries. */
   --font-deva: 'Rozha One', 'Cormorant Garamond', ui-serif, Georgia, serif;
+  /* Rozha One is a display face and goes muddy below about 20px, so running Hindi — the
+     paragraphs on the name section — is set in Mukta instead. The two were drawn by the
+     same foundry as a pair, which is why the headword and the prose still look related. */
+  --font-deva-text: 'Mukta', 'Noto Sans Devanagari', ui-sans-serif, system-ui, sans-serif;
   --font-loud: 'Anton', 'Arial Narrow', ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 }
@@ -161,4 +165,40 @@ html.road-snap {
   .stop-tile {
     aspect-ratio: var(--tile-ar-wide);
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Keyboard focus.
+
+   Everything interactive here sits on near-black, usually on top of a photograph, and
+   several are rounded cards with `overflow-hidden`. The browser's default 1px
+   `outline: auto` is invisible against that and gets clipped by the cards, so tabbing
+   through the site showed nothing at all. This ring is drawn outside the element's own
+   box in the site's paper colour, with a dark halo so it also holds over a bright photo.
+   --------------------------------------------------------------------------- */
+:where(a, button, [role='slider'], [role='button'], [tabindex]):focus-visible {
+  outline: 2px solid #f3e6d8;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(7, 6, 10, 0.85);
+}
+
+/* A keyboard user should not have to tab the whole moodboard to reach the content. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-250%);
+  border-radius: 9999px;
+  background: #f3e6d8;
+  color: #12100c;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }

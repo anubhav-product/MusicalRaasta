@@ -50,7 +50,7 @@ export default function ControlHint({ accent, imageIndex, imageCount, onPrev, on
       </button>
 
       <span className="ml-1 hidden text-[9px] leading-tight tracking-[0.16em] uppercase text-white/35 sm:block">
-        ↕ scroll · ←→ image
+        ↕ vol · ←→ seek · ‹› image
       </span>
     </div>
   )

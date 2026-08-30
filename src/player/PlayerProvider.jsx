@@ -35,6 +35,18 @@ export function PlayerProvider({ children }) {
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(30)
   const [needsGesture, setNeedsGesture] = useState(false)
+  // 0..1, applied to whichever backend is producing sound.
+  const [volume, setVolumeState] = useState(() => {
+    try {
+      // Guard the absent case explicitly: Number(null) is 0, which would otherwise pass
+      // the range check and start every first-time visitor in silence.
+      const raw = localStorage.getItem('mr:volume')
+      if (raw === null || raw === '') return 1
+      const v = Number(raw)
+      return Number.isFinite(v) && v > 0 && v <= 1 ? v : 1
+    } catch { return 1 }
+  })
+  const [muted, setMuted] = useState(false)
 
   const [backend, setBackend] = useState('preview')
   const [upgrading, setUpgrading] = useState(false)
@@ -160,6 +172,33 @@ export function PlayerProvider({ children }) {
 
   const nextRef = useRef(null)
   useEffect(() => { nextRef.current = next }, [next])
+
+  /** Volume is a single control across the preview elements and the YouTube player. */
+  const applyVolume = useCallback((v, isMuted) => {
+    const level = isMuted ? 0 : v
+    for (const el of [aRef.current, bRef.current]) {
+      // Never fight an in-flight crossfade, which owns element volume directly.
+      if (el && !fadeRef.current) el.volume = level
+    }
+    try { ytRef.current?.setVolume?.(Math.round(level * 100)) } catch { /* not ready */ }
+    const music = musicRef.current
+    if (music) { try { music.volume = level } catch { /* unsupported */ } }
+  }, [])
+
+  const setVolume = useCallback((v) => {
+    const clamped = Math.max(0, Math.min(1, v))
+    setVolumeState(clamped)
+    setMuted(false)
+    applyVolume(clamped, false)
+    try { localStorage.setItem('mr:volume', String(clamped)) } catch { /* private mode */ }
+  }, [applyVolume])
+
+  const toggleMute = useCallback(() => {
+    setMuted((m) => { applyVolume(volume, !m); return !m })
+  }, [applyVolume, volume])
+
+  // Re-apply whenever a new source loads or the backend changes.
+  useEffect(() => { applyVolume(volume, muted) }, [applyVolume, volume, muted, current?.trackId, ytActive, ytReady])
 
   /** Jump forwards or backwards within the current track. */
   const nudge = useCallback((seconds) => {
@@ -509,6 +548,7 @@ export function PlayerProvider({ children }) {
     () => ({
       queue, queueKey, index, current, isPlaying, progress, duration, needsGesture,
       loadQueue, playAt, next, prev, toggle, seek, nudge,
+      volume, muted, setVolume, toggleMute,
       fraction: duration ? progress / duration : 0,
       backend, ytActive,
       fullSongs: backend === 'apple' || ytActive,
@@ -518,6 +558,7 @@ export function PlayerProvider({ children }) {
     }),
     [queue, queueKey, index, current, isPlaying, progress, duration, needsGesture,
      loadQueue, playAt, next, prev, toggle, seek, nudge,
+     volume, muted, setVolume, toggleMute,
      backend, ytActive, upgrading, upgradeError, enableFullSongs, disableFullSongs,
      youtubeAvailable, enableYouTube, disableYouTube, ytMountId],
   )

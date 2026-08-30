@@ -2,39 +2,32 @@ import { createPortal } from 'react-dom'
 import { usePlayer } from './context.js'
 
 /**
- * The visible YouTube player.
+ * The YouTube player, kept as small and quiet as it is allowed to be.
  *
- * YouTube's terms require the video player be shown rather than used as a hidden audio
- * source, so it lives here as a small persistent card instead of being tucked away. It is
- * mounted for the life of the page — the IFrame API replaces #yt-mount with its own
- * iframe, and re-creating that on every scroll position or route change would cut the
- * song off, so visibility is toggled rather than the element itself.
+ * YouTube's terms require the video player to be visible rather than used as a hidden
+ * audio source, so this cannot be removed while full songs are streaming from them. What
+ * it can be is unobtrusive: a small corner chip rather than a panel, with its controls
+ * moved into the player UI where they belong.
  */
 export default function YouTubeStage() {
-  const { backend, upgrading, disableYouTube } = usePlayer()
-  const active = backend === 'youtube'
+  const { backend, upgrading, ytActive } = usePlayer()
+  const mounted = backend === 'youtube' || upgrading
 
   const stage = (
     <div
       id="yt-stage"
-      className="fixed bottom-[4.5rem] left-4 z-[45] w-[15rem] overflow-hidden rounded-xl border border-white/15 bg-black shadow-2xl sm:left-6 sm:w-[19rem]"
+      aria-label="Now playing video"
+      className="fixed bottom-[4.25rem] left-3 z-[45] w-[8.5rem] overflow-hidden rounded-lg border border-white/12 bg-black shadow-lg transition-opacity duration-500 sm:left-5 sm:w-[10.5rem]"
       style={{
-        // kept in the DOM at all times; only shown once the player is live
-        display: active || upgrading ? 'block' : 'none',
+        display: mounted ? 'block' : 'none',
+        // Dim while a preview clip is covering an unverified track, so it never looks
+        // like the video is the thing you are hearing.
+        opacity: ytActive ? 0.9 : 0.35,
       }}
     >
       <div className="aspect-video w-full">
         <div id="yt-mount" className="h-full w-full" />
       </div>
-      {active && (
-        <button
-          type="button"
-          onClick={disableYouTube}
-          className="w-full border-t border-white/10 py-1.5 text-[9px] tracking-[0.2em] uppercase text-white/45 transition-colors hover:text-white"
-        >
-          Back to previews
-        </button>
-      )}
     </div>
   )
 

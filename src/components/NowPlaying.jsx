@@ -44,7 +44,8 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
     current, isPlaying, toggle, next, prev, seek, nudge, fraction, progress, duration,
     needsGesture, index, queue,
     fullSongs, canOfferFullSongs, upgrading, upgradeError, enableFullSongs,
-    youtubeAvailable, enableYouTube, backend,
+    youtubeAvailable, enableYouTube, disableYouTube, backend,
+    volume, muted, setVolume, toggleMute,
   } = usePlayer()
   const reduced = usePrefersReducedMotion()
 
@@ -236,6 +237,43 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
         </button>
       </div>
 
+      {/* volume */}
+      <div className="flex w-full max-w-[15rem] items-center gap-3">
+        <button
+          type="button"
+          onClick={toggleMute}
+          aria-label={muted ? 'Unmute' : 'Mute'}
+          className="shrink-0 text-white/50 transition-colors hover:text-white"
+        >
+          {muted || volume === 0 ? (
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M11 5 6 9H3v6h3l5 4zM16.5 9.5l5 5m0-5-5 5" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M11 5 6 9H3v6h3l5 4z" />
+              <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="1.7" fill="none" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={muted ? 0 : volume}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          aria-label="Volume"
+          className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-white
+                     [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3
+                     [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
+          style={{ accentColor: accent }}
+        />
+        <span className="w-7 shrink-0 text-right text-[10px] tabular-nums text-white/35">
+          {Math.round((muted ? 0 : volume) * 100)}
+        </span>
+      </div>
+
       <div className="flex flex-col items-center gap-3">
         <div className="flex items-center gap-5 text-[10px] tracking-[0.24em] uppercase">
           <button
@@ -246,14 +284,25 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
             Queue ({queue.length})
           </button>
           <span aria-hidden className="text-white/20">·</span>
-          <a
-            href={current.appleMusicUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/45 transition-colors hover:text-white"
-          >
-            Open in Apple Music ↗
-          </a>
+          {current.youtubeId ? (
+            <a
+              href={`https://www.youtube.com/watch?v=${current.youtubeId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/45 transition-colors hover:text-white"
+            >
+              Watch video ↗
+            </a>
+          ) : (
+            <a
+              href={current.appleMusicUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/45 transition-colors hover:text-white"
+            >
+              Open in Apple Music ↗
+            </a>
+          )}
         </div>
 
         {/* Say plainly that this is a clip, and offer the way out of it. */}
@@ -290,9 +339,23 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
           </div>
         )}
         {fullSongs && (
-          <p className="text-[10px] tracking-[0.16em]" style={{ color: accent }}>
-            Full songs · {backend === 'youtube' ? 'YouTube' : 'Apple Music'}
-          </p>
+          <div className="flex items-center gap-3 text-[10px] tracking-[0.16em]">
+            <span style={{ color: accent }}>
+              Full songs · {backend === 'youtube' ? 'YouTube' : 'Apple Music'}
+            </span>
+            {backend === 'youtube' && (
+              <>
+                <span aria-hidden className="text-white/20">·</span>
+                <button
+                  type="button"
+                  onClick={disableYouTube}
+                  className="uppercase tracking-[0.2em] text-white/35 transition-colors hover:text-white/80"
+                >
+                  Previews
+                </button>
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>

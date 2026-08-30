@@ -76,6 +76,20 @@ export default function JourneyShell() {
         '--road-light': palette[2],
       }}
     >
+      {/* Lives above the router so it survives route changes. Focusing the wrapper
+          directly instead of following the href keeps the hash out of the URL, which
+          would otherwise end up in every shared link. */}
+      <a
+        href="#journey-main"
+        className="skip-link"
+        onClick={(e) => {
+          e.preventDefault()
+          document.getElementById('journey-main')?.focus()
+        }}
+      >
+        Skip to content
+      </a>
+
       <AnimatePresence>
         {bleed && !reduced && (
           <BleedVeil
@@ -88,12 +102,14 @@ export default function JourneyShell() {
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
+          id="journey-main"
+          tabIndex={-1}
           key={location.pathname}
           variants={pageVariants}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="relative z-20 min-h-svh"
+          className="relative z-20 min-h-svh outline-none"
           style={{ backgroundColor: palette[0] }}
         >
           <Outlet />
