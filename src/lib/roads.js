@@ -146,6 +146,33 @@ export function transitionFor(pathname) {
  * road speaks in heavy condensed caps. Without this the two roads read as one design in
  * two colourways, which is exactly what they should not be.
  */
+/**
+ * Every road and stop also carries a Hindi name. Most of this music is Hindi, Urdu or
+ * Punjabi, and "raasta" is already the word for road — so the two scripts sitting
+ * together is the honest way to title it, not decoration.
+ */
+const HINDI = {
+  'within-you': 'अपने भीतर',
+  'for-fun': 'मस्ती',
+  'nostalgic-classics': 'पुरानी यादें',
+  'ghazals-soul': 'ग़ज़लें',
+  'heartbreak-longing': 'तन्हाई',
+  'sweet-romantic': 'मोहब्बत',
+  'peppy-celebratory': 'जश्न',
+  'shared-earphones': 'उधार के गाने',
+  'bollywood-dance-anthems': 'नाच-गाना',
+  'punjabi-hip-hop-trap': 'पंजाबी ट्रैप',
+  'haryanvi-desi-bass': 'देसी बास',
+  'international-bangers': 'विदेशी धमाल',
+  'bass-drops-electronic': 'इलेक्ट्रॉनिक',
+  'open-road-cruise': 'खुली सड़क',
+}
+
+/** The Hindi name for a road or chapter slug, or null if there isn't one. */
+export function hindiFor(slug) {
+  return HINDI[slug] ?? null
+}
+
 export function typeFor(roadId) {
   return roadId === 'for-fun'
     ? {

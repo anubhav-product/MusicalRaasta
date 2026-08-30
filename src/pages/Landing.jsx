@@ -130,7 +130,19 @@ function Threshold({ reduced, totals }) {
         A mixtape for {SITE.title}
       </motion.p>
 
-      <h1 className="mt-8 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">
+      {/* The Hindi line first: raasta is the word the whole site is named for. */}
+      <motion.p
+        lang="hi"
+        initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.9 }}
+        className="mt-6 font-deva text-3xl leading-none sm:text-5xl [text-shadow:0_2px_24px_rgba(7,6,10,0.95)]"
+        style={{ color: '#fbbf24' }}
+      >
+        दो रास्ते, एक प्लेलिस्ट
+      </motion.p>
+
+      <h1 className="mt-4 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">
         <span className="block">
           {line1.map((w, i) => (
             <Fragment key={w}>

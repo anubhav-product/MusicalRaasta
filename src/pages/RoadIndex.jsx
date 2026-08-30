@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { chapterImages, chapterThumbs, getRoad, motionFor, typeFor } from '../lib/roads.js'
+import { chapterImages, chapterThumbs, getRoad, hindiFor, motionFor, typeFor } from '../lib/roads.js'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion.js'
 
 /**
@@ -117,6 +117,18 @@ function RoadHero({ road, type, total, reduced, cut }) {
         >
           {road.title}
         </motion.h1>
+        {hindiFor(road.id) && (
+          <motion.p
+            lang="hi"
+            initial={reduced ? { opacity: 0 } : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.7 }}
+            className="mt-2 font-deva text-3xl sm:text-4xl"
+            style={{ color: road.palette[1] }}
+          >
+            {hindiFor(road.id)}
+          </motion.p>
+        )}
 
         <motion.p
           initial={reduced ? { opacity: 0 } : { opacity: 0, y: 14 }}

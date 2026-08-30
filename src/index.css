@@ -2,7 +2,9 @@
 
 @theme {
   --font-display: 'Cormorant Garamond', ui-serif, Georgia, serif;
-  --font-body: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  /* Devanagari-capable display face, for the Hindi name each stop also carries. */
+  --font-deva: 'Rozha One', 'Cormorant Garamond', ui-serif, Georgia, serif;
   --font-loud: 'Anton', 'Arial Narrow', ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 }

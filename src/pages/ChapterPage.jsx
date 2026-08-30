@@ -9,7 +9,7 @@ import MiniPlayer from '../components/MiniPlayer.jsx'
 import { usePlayer } from '../player/context.js'
 import { useScrollIntent } from '../hooks/useScrollIntent.js'
 import {
-  chapterImages, getChapter, getRoad, motionFor, nextStop, prevStop, typeFor,
+  chapterImages, getChapter, getRoad, hindiFor, motionFor, nextStop, prevStop, typeFor,
 } from '../lib/roads.js'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion.js'
 
@@ -110,7 +110,19 @@ export default function ChapterPage({ roadId }) {
             >
               {road.title} · {chapter.kicker}
             </motion.p>
-            <h1 className={`mt-5 text-5xl sm:text-7xl lg:text-8xl ${type.heading}`}>
+            {hindiFor(chapter.slug) && (
+              <motion.p
+                lang="hi"
+                initial={reduced ? { opacity: 0 } : { opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18, duration: 0.7 }}
+                className="mt-4 font-deva text-3xl leading-none sm:text-4xl"
+                style={{ color: accent }}
+              >
+                {hindiFor(chapter.slug)}
+              </motion.p>
+            )}
+            <h1 className={`mt-3 text-5xl sm:text-7xl lg:text-8xl ${type.heading}`}>
               {words.map((word, i) => (
                 <Fragment key={`${word}-${i}`}>
                   <motion.span
