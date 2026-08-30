@@ -13,9 +13,13 @@ import EndPage from './pages/EndPage.jsx'
  * The static /end route is declared before the :chapterSlug route it would
  * otherwise be captured by.
  */
+// Vite exposes the configured base as BASE_URL; React Router wants it without the
+// trailing slash, and an empty string at the root.
+const BASENAME = import.meta.env.BASE_URL.replace(/\/$/, '')
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={BASENAME}>
       <PlayerProvider>
       <GrainOverlay />
       <Routes>

@@ -28,10 +28,17 @@ movements you scroll through in order, in `src/pages/Landing.jsx`:
    rendered twice and translated exactly `-50%`, which is what makes the loop seamless
    (`.drift-col`). The collage is graded warm on the left and hot on the right, so the
    fork is implied before it is drawn, and darkened in a pool under the type rather than
-   sunk as a whole — the photographs stay alive around the edges.
-2. **The fork.** The road drawn splitting in two, landing each branch on the panel it
-   belongs to, then the two roads offered side by side. A panel cycles through its own
-   stops' photography and takes room from the other one on hover.
+   sunk as a whole — the photographs stay alive around the edges. The drift is deliberately
+   near-still (~200s a cycle, as is the stop marquee at ~150s): ambient motion should be
+   something you notice only if you look for it, and at the original speeds both pulled
+   the eye straight off the type.
+2. **The fork.** A listener in over-ear headphones, seen from behind, standing where the
+   road divides. He is drawn three times — once in Within You's amber shifted left, once
+   in For Fun's magenta shifted right, then in near-black on top — so each road's light
+   catches one side of him. The road splits under his feet and lands each branch on the
+   panel it belongs to; below `lg` the panels stack, so it carries straight on instead.
+   A panel cycles through its own stops' photography and takes room from the other on
+   hover.
 3. **The stops.** All twelve rooms as a pinboard you can walk straight into, skipping the
    fork entirely.
 4. **The dedication.**
@@ -241,7 +248,21 @@ For Fun.
 ## Images
 
 Ten curated backdrops per chapter in `src/assets/images/{road}/{chapterSlug}/01.jpg`…`10.jpg`,
-downloaded locally rather than hotlinked. Tooling:
+downloaded locally rather than hotlinked, all **1920x1280** — full-bleed behind a chapter,
+anything smaller shows.
+
+Most of the site is not full-bleed, though. The landing-page moodboard, the pinboard tiles
+and the end page's row of stops each render a photograph a few hundred pixels wide, and
+serving 380 KB into a 170 px tile put **22 MB** on the landing page. So there is a second
+set of 640 px variants under `src/assets/thumbs/`, same paths and same indices, reached
+through `chapterThumbs()` instead of `chapterImages()`. That took the landing page to
+**1.1 MB**. Regenerate them after changing any backdrop:
+
+```bash
+npm run thumbs
+```
+
+Tooling for curation itself:
 
 ```bash
 CHAPTER_SPEC='[{"slug":"…","palette":["#…"],"queries":["…"]}]' node scripts/fetch-candidates.mjs

@@ -1,8 +1,15 @@
 import withinYou from '../data/within-you-songs.json'
 import forFun from '../data/for-fun-songs.json'
 
-// Chapter backdrops live at src/assets/images/{roadId}/{chapterSlug}/01.jpg ... 10.jpg
+// Chapter backdrops live at src/assets/images/{roadId}/{chapterSlug}/01.jpg ... 10.jpg,
+// with 640px variants alongside them under assets/thumbs (see scripts/build-thumbs.mjs).
+// Full size is for full-bleed use only; anywhere a photograph renders a few hundred
+// pixels wide, the thumbnail is the one to reach for.
 const imageModules = import.meta.glob('../assets/images/**/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+  import: 'default',
+})
+const thumbModules = import.meta.glob('../assets/thumbs/**/*.{jpg,jpeg,png,webp}', {
   eager: true,
   import: 'default',
 })
@@ -90,12 +97,23 @@ export function prevStop(roadId, slug) {
   return { href: `${road.base}/${prev.slug}`, label: prev.name }
 }
 
-export function chapterImages(roadId, slug) {
-  const needle = `/images/${roadId}/${slug}/`
-  return Object.entries(imageModules)
+function resolve(modules, kind, roadId, slug) {
+  const needle = `/${kind}/${roadId}/${slug}/`
+  return Object.entries(modules)
     .filter(([path]) => path.includes(needle))
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, src]) => src)
+}
+
+/** Full-size backdrops, for full-bleed use. */
+export function chapterImages(roadId, slug) {
+  return resolve(imageModules, 'images', roadId, slug)
+}
+
+/** 640px variants, for anywhere a photograph renders small. Same order, same indices. */
+export function chapterThumbs(roadId, slug) {
+  const thumbs = resolve(thumbModules, 'thumbs', roadId, slug)
+  return thumbs.length ? thumbs : chapterImages(roadId, slug)
 }
 
 const LANDING_PALETTE = ['#120d0a', '#b98a54', '#e8d3ab']
@@ -172,7 +190,7 @@ export function siteTotals() {
 export function collageImages(perChapter = 3) {
   const stops = allStops()
   const picks = stops.map(({ roadId, chapter }) => {
-    const all = chapterImages(roadId, chapter.slug)
+    const all = chapterThumbs(roadId, chapter.slug)
     const step = Math.max(1, Math.floor(all.length / perChapter))
     return Array.from({ length: perChapter }, (_, i) => all[(i * step + 1) % all.length]).filter(Boolean)
   })

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { chapterImages, getRoad, SITE, typeFor } from '../lib/roads.js'
+import { chapterImages, chapterThumbs, getRoad, SITE, typeFor } from '../lib/roads.js'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion.js'
 
 /**
@@ -167,7 +167,7 @@ function TravelledRoad({ road, reduced, signature, type }) {
           style={{ borderColor: `${signature}33` }}
         />
         {road.chapters.map((c, i) => {
-          const image = chapterImages(road.id, c.slug)[0]
+          const image = chapterThumbs(road.id, c.slug)[0]
           return (
             <li key={c.slug} className="relative z-10 w-[calc(33.333%-0.5rem)] sm:w-auto sm:flex-1">
               <Link
@@ -216,7 +216,7 @@ function TravelledRoad({ road, reduced, signature, type }) {
 
 /** The road not taken — offered as a place, not as a footnote. */
 function OtherRoad({ other, reduced }) {
-  const cover = chapterImages(other.id, other.chapters[0].slug)[1]
+  const cover = chapterThumbs(other.id, other.chapters[0].slug)[1]
   const otherType = typeFor(other.id)
 
   return (

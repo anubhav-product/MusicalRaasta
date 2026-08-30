@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { chapterImages, getRoad, motionFor, typeFor } from '../lib/roads.js'
+import { chapterImages, chapterThumbs, getRoad, motionFor, typeFor } from '../lib/roads.js'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion.js'
 
 /**
@@ -58,7 +58,7 @@ function RoadHero({ road, type, total, reduced, cut }) {
   // than of a gradient. Duotoned hard into the road's colour — the two roads have to be
   // unmistakable from the first frame.
   const strip = useMemo(
-    () => road.chapters.map((c) => chapterImages(road.id, c.slug)[0]).filter(Boolean),
+    () => road.chapters.map((c) => chapterThumbs(road.id, c.slug)[0]).filter(Boolean),
     [road],
   )
 

@@ -15,7 +15,8 @@
     "yt:resolve": "node --env-file-if-exists=.env scripts/resolve-youtube.mjs",
     "yt:report": "node scripts/youtube-report.mjs",
     "yt:check": "node --env-file-if-exists=.env scripts/youtube-preflight.mjs",
-    "yt:rescore": "node --env-file-if-exists=.env scripts/resolve-youtube.mjs --rescore"
+    "yt:rescore": "node --env-file-if-exists=.env scripts/resolve-youtube.mjs --rescore",
+    "thumbs": "node scripts/build-thumbs.mjs"
   },
   "dependencies": {
     "framer-motion": "^13.1.1",

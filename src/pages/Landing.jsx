@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  ROADS, allStops, chapterImages, collageImages, siteTotals, SITE, typeFor,
+  ROADS, allStops, chapterImages, chapterThumbs, collageImages, siteTotals, SITE, typeFor,
 } from '../lib/roads.js'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion.js'
 
@@ -392,7 +392,7 @@ function RoadPanel({ road, index, reduced }) {
             style={{
               opacity: (reduced ? i === 0 : i === frame) ? 1 : 0,
               transform: hover && !reduced ? 'scale(1.07)' : 'scale(1)',
-              filter: `saturate(${hover && !reduced ? 1.05 : 0.22}) contrast(1.12) brightness(1.16)`,
+              filter: `saturate(${hover && !reduced ? 1.05 : 0.22}) contrast(1.1) brightness(${road.id === 'within-you' ? 1.5 : 1.16})`,
             }}
           />
         ))}
@@ -407,7 +407,7 @@ function RoadPanel({ road, index, reduced }) {
           aria-hidden
           className="absolute inset-0 transition-opacity duration-700"
           style={{
-            background: `linear-gradient(178deg, ${road.palette[0]}70 0%, ${road.palette[0]}17 15%, ${road.palette[0]}61 38%, ${road.palette[0]}e8 72%, ${road.palette[0]}fc 100%)`,
+            background: `linear-gradient(178deg, ${road.palette[0]}70 0%, ${road.palette[0]}17 15%, ${road.palette[0]}45 40%, ${road.palette[0]}e8 72%, ${road.palette[0]}fc 100%)`,
             opacity: hover ? 0.88 : 1,
           }}
         />
@@ -574,7 +574,7 @@ const TILE_RATIOS_WIDE = [0.78, 1.15, 0.92, 1.32, 0.84, 1.05, 1.28, 0.8, 1.1, 0.
 function StopTile({ stop, i, reduced }) {
   const { roadId, road, chapter, index } = stop
   const [hover, setHover] = useState(false)
-  const image = chapterImages(roadId, chapter.slug)[i % 3 === 0 ? 0 : 2]
+  const image = chapterThumbs(roadId, chapter.slug)[i % 3 === 0 ? 0 : 2]
   const p = chapter.suggestedPalette
   const type = typeFor(roadId)
 
