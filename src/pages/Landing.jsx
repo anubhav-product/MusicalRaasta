@@ -10,10 +10,11 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion.js'
  * The landing page is the prologue of the journey, not a menu in front of it. It is told
  * in four movements that you scroll through in order:
  *
- *   I.   The threshold — the whole record playing at once behind the title.
- *   II.  The fork      — two roads drawn splitting apart, then offered side by side.
- *   III. The stops     — every room on both roads, laid out as a wall you can browse.
- *   IV.  The dedication — who it is for.
+ *   I.   The threshold  — the whole record playing at once behind the title.
+ *   II.  The fork       — two roads drawn splitting apart, then offered side by side.
+ *   III. The stops      — every room on both roads, laid out as a wall you can browse.
+ *   IV.  The name       — what अनुभव means, and who chose all of this.
+ *   V.   The dedication — who it is for.
  *
  * Everything on it is built from the real chapter backdrops and the real song counts, so
  * the page is a view of the thing rather than an advertisement for it.
@@ -28,6 +29,7 @@ export default function Landing() {
       <Fork reduced={reduced} />
       <StopMarquee reduced={reduced} />
       <StopWall reduced={reduced} totals={totals} />
+      <Signature reduced={reduced} />
       <Dedication reduced={reduced} totals={totals} />
     </main>
   )
@@ -735,6 +737,111 @@ function StopWall({ reduced, totals }) {
 }
 
 /* ----------------------------------------------------------------- movement IV */
+
+/**
+ * The name, and the only credential behind the whole thing.
+ *
+ * The title is a Hindi sentence about what this is: रास्ता is the road the site is built
+ * as, and अनुभव is the word for experience — which is also the name of the person who
+ * chose the songs. Rather than explain the pun, the page sets it as a dictionary entry
+ * and then signs it, so a reader who has no Hindi still gets both halves.
+ *
+ * It sits here on purpose. You have just scrolled the wall of every stop that exists;
+ * this is the answer to the question that raises — who decided all of that, and on what
+ * authority — and the last thing you read before the dedication hands you the road.
+ */
+function Signature({ reduced }) {
+  const rise = (delay) => ({
+    initial: reduced ? { opacity: 0 } : { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: '-12% 0px' },
+    transition: reduced ? { duration: 0.2 } : { delay, duration: 0.85, ease: [0.22, 1, 0.36, 1] },
+  })
+
+  return (
+    <section className="relative px-6 py-20 sm:px-12 sm:py-28">
+      {/* Both roads' light, met halfway: this is the one part of the site that belongs to
+          neither of them, so it takes a little of each instead of picking a side. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(44% 54% at 24% 44%, #c98a4b21 0%, transparent 68%), radial-gradient(44% 54% at 76% 56%, #ff2e881c 0%, transparent 68%)',
+        }}
+      />
+
+      <div className="mx-auto max-w-2xl text-center">
+        <motion.p
+          {...rise(0)}
+          className="text-[10px] tracking-[0.4em] uppercase text-white/40"
+        >
+          Why it is called this
+        </motion.p>
+
+        {/* The headword, set as an entry out of a dictionary — the name and its meaning
+            are the same word, and seeing it defined is what makes that land. */}
+        <motion.figure {...rise(0.08)} className="mt-9 border-y border-white/10 py-9 sm:py-11">
+          <p
+            lang="hi"
+            className="font-deva text-6xl leading-none sm:text-8xl"
+            style={{ color: '#fbbf24' }}
+          >
+            अनुभव
+          </p>
+          <p className="mt-5 font-mono text-[11px] tracking-[0.24em] uppercase text-white/40">
+            anubhav
+            <span aria-hidden className="mx-2 text-white/20">·</span>
+            <span className="normal-case italic tracking-normal">noun, Hindi</span>
+          </p>
+          <figcaption className="mx-auto mt-4 max-w-md font-display text-2xl italic leading-snug text-white/80 sm:text-3xl">
+            experience — what you have lived through, and what it left behind in you
+          </figcaption>
+        </motion.figure>
+
+        <motion.div
+          {...rise(0.16)}
+          className="mx-auto mt-10 max-w-xl space-y-5 text-base leading-relaxed text-white/70 sm:text-lg"
+        >
+          <p>
+            <span lang="hi" className="font-deva text-xl text-[#e8d3ab] sm:text-2xl">रास्ता</span>{' '}
+            is the road.{' '}
+            <span lang="hi" className="font-deva text-xl text-[#e8d3ab] sm:text-2xl">अनुभव</span>{' '}
+            is what you gather while you walk it. Musical Raasta is both — a journey through
+            the stages of a life, where the question is never what is popular but what you
+            are feeling today, and which song you need for it.
+          </p>
+          <p>
+            Nothing here came off a chart. Every stop is a mood I have actually stood in, and
+            every song on it was chosen the way you would choose one for yourself: by what it
+            felt like to need it. That experience is the entire curation — and it is also,
+            as it happens, my name.
+          </p>
+        </motion.div>
+
+        {/* Signed like a letter: the Devanagari is the name, the roman only the gloss. */}
+        <motion.div {...rise(0.24)} className="mt-12 flex flex-col items-center">
+          <span aria-hidden className="hairline h-px w-24" />
+          <span className="mt-6 text-[10px] tracking-[0.34em] uppercase text-white/35">
+            Curated by
+          </span>
+          <span
+            lang="hi"
+            className="mt-3 font-deva text-4xl leading-none sm:text-5xl"
+            style={{ color: '#e8d3ab' }}
+          >
+            {SITE.author.deva}
+          </span>
+          <span className="mt-3 font-mono text-[10px] tracking-[0.3em] uppercase text-white/35">
+            {SITE.author.name}
+          </span>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ movement V */
 
 function Dedication({ reduced, totals }) {
   return (

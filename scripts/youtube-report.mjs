@@ -64,8 +64,8 @@ ${rows.map((r) => `<tr>
    <div class="why">${esc(r.youtubeChannel ?? '—')}</div>
    <div class="why">${esc(r.youtubeTitle ?? 'no candidate')}</div>
  </td>
- <td>${r.youtubeId
-   ? `<iframe width="320" height="180" src="https://www.youtube.com/embed/${esc(r.youtubeId)}" allowfullscreen loading="lazy"></iframe>`
+ <td>${(r.youtubeId || r.youtubeCandidate)
+   ? `<iframe width="320" height="180" src="https://www.youtube.com/embed/${esc(r.youtubeId ?? r.youtubeCandidate)}" allowfullscreen loading="lazy"></iframe>`
    : `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(`${r.title} ${r.artist}`)}" target="_blank">search YouTube →</a>`}
  </td>
 </tr>`).join('\n')}

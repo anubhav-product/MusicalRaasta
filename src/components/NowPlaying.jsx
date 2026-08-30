@@ -41,7 +41,7 @@ function Equalizer({ active, color }) {
  */
 export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleClass = 'font-display' }) {
   const {
-    current, isPlaying, toggle, next, prev, seek, fraction, progress, duration,
+    current, isPlaying, toggle, next, prev, seek, nudge, fraction, progress, duration,
     needsGesture, index, queue,
     fullSongs, canOfferFullSongs, upgrading, upgradeError, enableFullSongs,
     youtubeAvailable, enableYouTube, backend,
@@ -160,7 +160,19 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
       </div>
 
       {/* transport */}
-      <div className="flex items-center gap-7">
+      <div className="flex items-center gap-4 sm:gap-6">
+        <button
+          type="button"
+          onClick={() => nudge(-10)}
+          aria-label="Back 10 seconds"
+          className="flex flex-col items-center text-white/50 transition-colors hover:text-white"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+            <path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="mt-0.5 text-[9px] tabular-nums tracking-wider">10</span>
+        </button>
+
         <button
           type="button"
           onClick={prev}
@@ -209,6 +221,18 @@ export default function NowPlaying({ accent, mode = 'drift', onOpenQueue, titleC
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
             <path d="M16 5h2v14h-2zM4 5l11 7-11 7z" />
           </svg>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => nudge(10)}
+          aria-label="Forward 10 seconds"
+          className="flex flex-col items-center text-white/50 transition-colors hover:text-white"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+            <path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="mt-0.5 text-[9px] tabular-nums tracking-wider">10</span>
         </button>
       </div>
 

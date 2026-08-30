@@ -2609,11 +2609,12 @@
           "artwork": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/56/ac/41/56ac41f7-99f3-3eae-3b07-443167292c4e/8902894697408_cover.jpg/600x600bb.jpg",
           "durationMs": 384000,
           "appleMusicUrl": "https://music.apple.com/in/album/nadaan-parinde/1123241840?i=1123241928&uo=4",
-          "youtubeId": "6MgsHSAcI9k",
+          "youtubeId": null,
           "youtubeConfidence": "low",
           "youtubeTitle": "ROCKSTAR: Nadaan Parinde (Lyrical Video) | Ranbir Kapoor | A.R Rahman | Mohit Chauhan, Irshad Kamil",
           "youtubeChannel": "T-Series",
-          "youtubeDelta": 18
+          "youtubeDelta": 18,
+          "youtubeCandidate": "6MgsHSAcI9k"
         },
         {
           "title": "Falak Tak",

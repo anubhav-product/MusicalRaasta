@@ -217,6 +217,21 @@ const docs = Object.fromEntries(
   roads.map((r) => [r, JSON.parse(readFileSync(`src/data/${r}-songs.json`, 'utf8'))]),
 )
 
+// Demote anything already stored at low confidence — it must not play.
+let demoted = 0
+for (const road of roads) {
+  for (const chapter of docs[road].chapters) {
+    for (const song of chapter.songs) {
+      if (song.youtubeConfidence === 'low' && song.youtubeId) {
+        song.youtubeCandidate = song.youtubeId
+        song.youtubeId = null
+        demoted++
+      }
+    }
+  }
+}
+if (demoted) console.log(`demoted ${demoted} low-confidence match(es) to review-only.\n`)
+
 const pending = []
 for (const road of roads) {
   for (const chapter of docs[road].chapters) {
@@ -226,7 +241,7 @@ for (const road of roads) {
         song.youtubeConfidence = 'manual'
         continue
       }
-      if (!FORCE && !RESCORE && song.youtubeId) continue
+      if (!FORCE && !RESCORE && (song.youtubeId || song.youtubeCandidate)) continue
       if (RESCORE && !cache[song.trackId]) continue
       pending.push({ road, chapter: chapter.slug, song })
     }
@@ -246,15 +261,18 @@ for (const item of pending.slice(0, budget)) {
     const { best } = await resolveTrack(song)
     const conf = confidenceOf(best)
     tally[conf]++
-    if (best && conf !== 'none') {
+    song.youtubeConfidence = conf
+    song.youtubeTitle = best?.ytTitle ?? null
+    song.youtubeChannel = best?.channel ?? null
+    song.youtubeDelta = best?.delta ?? null
+    if (best && (conf === 'high' || conf === 'medium')) {
       song.youtubeId = best.videoId
-      song.youtubeConfidence = conf
-      song.youtubeTitle = best.ytTitle
-      song.youtubeChannel = best.channel
-      song.youtubeDelta = best.delta
+      delete song.youtubeCandidate
     } else {
+      // A low-confidence guess is worse than a preview: it plays a cover, a compilation
+      // or the wrong cut. Keep it as a reviewable candidate, never as playback.
       song.youtubeId = null
-      song.youtubeConfidence = 'none'
+      song.youtubeCandidate = best?.videoId ?? null
     }
     done++
     const mark = { high: 'ok  ', medium: 'med ', low: 'LOW ', none: 'MISS' }[conf]

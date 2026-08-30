@@ -87,6 +87,12 @@ check('youtube stage is visible (required by their terms)',
     const st = getComputedStyle(el); const r = el.getBoundingClientRect()
     return st.display !== 'none' && st.visibility !== 'hidden' && r.width > 150 && r.height > 80
   }))
+check('an unverified track falls back to its preview instead of being skipped',
+  await page.evaluate(() => [...document.querySelectorAll('audio')].some((a) => !a.paused)))
+
+// A chapter whose first track IS verified should stream it in full.
+await page.goto(`${BASE}/within-you/ghazals-soul`, { waitUntil: 'networkidle2' })
+await sleep(7000)
 check('preview audio stays silent while YouTube plays',
   await page.evaluate(() => [...document.querySelectorAll('audio')].every((a) => a.paused)))
 
@@ -149,13 +155,14 @@ await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkid
 await sleep(2000)
 await scrollTo(0.35)
 
-// ---------- scroll up reveals the queue ----------
-await page.evaluate(() => {
-  for (let i = 0; i < 14; i++) window.dispatchEvent(new WheelEvent('wheel', { deltaY: -40, bubbles: true }))
+// ---------- the queue opens from the player, not a scroll gesture ----------
+await page.$$eval('button', (bs) => {
+  const b = bs.find((x) => /^queue/i.test(x.textContent.trim()) || /show queue/i.test(x.getAttribute('aria-label') || ''))
+  if (b) b.click()
 })
-await sleep(900)
+await sleep(1100)
 const sheet = await page.$('[role="dialog"][aria-label="Queue"]')
-check('scrolling up raises the queue', !!sheet)
+check('the queue opens from the player', !!sheet)
 const rows = await page.$$eval('[role="dialog"] ol li', (n) => n.length)
 check('queue lists the chapter', rows === 35, `${rows} rows`)
 
@@ -165,6 +172,24 @@ await sleep(1300)
 check('queue closes after picking', (await page.$('[role="dialog"][aria-label="Queue"]')) === null)
 const picked = await page.$eval('h2', (e) => e.textContent.trim())
 check('picked track is playing', !!picked, picked)
+
+// ---------- arrow keys step through the imagery ----------
+await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkidle2' })
+await sleep(2000)
+await scrollTo(0.4)
+const beforeY = await page.evaluate(() => window.scrollY)
+await page.keyboard.press('ArrowRight')
+await sleep(1400)
+const afterY = await page.evaluate(() => window.scrollY)
+check('right arrow advances the imagery', afterY > beforeY, `${beforeY} -> ${afterY}`)
+await page.keyboard.press('ArrowLeft')
+await sleep(1400)
+check('left arrow goes back',
+  (await page.evaluate(() => window.scrollY)) < afterY)
+check('the control legend is on screen',
+  await page.$$eval('button', (bs) => bs.some((b) => /previous image/i.test(b.getAttribute('aria-label') || ''))))
+check('there is a 10-second skip control',
+  await page.$$eval('button', (bs) => bs.some((b) => /forward 10 seconds/i.test(b.getAttribute('aria-label') || ''))))
 
 // ---------- end of chapter ----------
 await page.goto(`${BASE}/within-you/nostalgic-classics`, { waitUntil: 'networkidle2' })

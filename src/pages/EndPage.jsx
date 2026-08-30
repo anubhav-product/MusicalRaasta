@@ -88,6 +88,21 @@ export default function EndPage({ roadId }) {
           <p className="text-[10px] tracking-[0.26em] uppercase text-white/35">
             {road.chapters.length} stops · {total} songs · for {SITE.title}
           </p>
+
+          {/* The byline belongs at the end of the road as well as on the landing page:
+              a deep link drops you straight onto a stop, so this may be the only place a
+              given visitor ever learns whose experience picked all of it. */}
+          <p className="flex items-center justify-center gap-2.5 text-[10px] tracking-[0.26em] uppercase text-white/30">
+            Curated by
+            <span
+              lang="hi"
+              className="font-deva text-xl normal-case tracking-normal"
+              style={{ color: signature }}
+            >
+              {SITE.author.deva}
+            </span>
+            <span className="tracking-[0.26em]">{SITE.author.name}</span>
+          </p>
         </motion.div>
 
         <OtherRoad other={other} reduced={reduced} />

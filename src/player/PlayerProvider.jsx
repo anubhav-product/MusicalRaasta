@@ -44,12 +44,17 @@ export function PlayerProvider({ children }) {
   const [ytReady, setYtReady] = useState(false)
   const [ytMountId, setYtMountId] = useState(null)
   const backendRef = useRef('preview')
+  const ytActiveRef = useRef(false)
   // Pausing the preview elements while handing over to another backend fires 'pause',
   // which would otherwise be read as the listener choosing to stop.
   const switchingRef = useRef(false)
   useEffect(() => { backendRef.current = backend }, [backend])
 
   const current = queue[index] ?? null
+  // Playback is chosen per track: a verified video streams in full, anything without one
+  // falls back to its preview clip so the queue never skips or stalls.
+  const ytActive = backend === 'youtube' && !!current?.youtubeId
+  useEffect(() => { ytActiveRef.current = ytActive }, [ytActive])
   const queueRef = useRef(queue)
   const indexRef = useRef(index)
   useEffect(() => { queueRef.current = queue }, [queue])
@@ -156,13 +161,37 @@ export function PlayerProvider({ children }) {
   const nextRef = useRef(null)
   useEffect(() => { nextRef.current = next }, [next])
 
+  /** Jump forwards or backwards within the current track. */
+  const nudge = useCallback((seconds) => {
+    if (ytActiveRef.current) {
+      const player = ytRef.current
+      try {
+        const d = player?.getDuration?.() ?? 0
+        const t = player?.getCurrentTime?.() ?? 0
+        player?.seekTo?.(Math.max(0, Math.min(d, t + seconds)), true)
+      } catch { /* not ready */ }
+      return
+    }
+    const music = musicRef.current
+    if (music && backendRef.current === 'apple') {
+      const d = music.currentPlaybackDuration || 0
+      music.seekToTime(Math.max(0, Math.min(d, (music.currentPlaybackTime || 0) + seconds))).catch(() => {})
+      return
+    }
+    const audio = activeEl()
+    if (!audio || !Number.isFinite(audio.duration)) return
+    cancelFade()
+    audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + seconds))
+    setProgress(audio.currentTime)
+  }, [cancelFade])
+
   const toggle = useCallback(() => {
     setNeedsGesture(false)
     setIsPlaying((p) => !p)
   }, [])
 
   const seek = useCallback((fraction) => {
-    if (backendRef.current === 'youtube') {
+    if (ytActiveRef.current) {
       const player = ytRef.current
       try {
         const d = player?.getDuration?.() ?? 0
@@ -185,7 +214,7 @@ export function PlayerProvider({ children }) {
   // Point the active element at the current track. Skipped when a crossfade already put
   // it there, and while MusicKit is driving.
   useEffect(() => {
-    if (backend !== 'preview') return
+    if (ytActive || backend === 'apple') return
     const audio = activeEl()
     if (!audio || !current?.previewUrl) return
     if (audio.src !== current.previewUrl) {
@@ -195,7 +224,7 @@ export function PlayerProvider({ children }) {
     }
     if (isPlaying) attempt(audio)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.previewUrl, backend])
+  }, [current?.previewUrl, ytActive, backend])
 
   useEffect(() => {
     const music = musicRef.current
@@ -204,7 +233,7 @@ export function PlayerProvider({ children }) {
       else music.pause()
       return
     }
-    if (backend !== 'preview') {
+    if (ytActive || backend === 'apple') {
       // Another backend is producing the sound; make sure these are not also playing.
       cancelFade()
       aRef.current?.pause()
@@ -215,11 +244,11 @@ export function PlayerProvider({ children }) {
     if (!audio || !current?.previewUrl) return
     if (isPlaying) attempt(audio)
     else { audio.pause(); if (fadeRef.current) cancelFade() }
-  }, [isPlaying, current?.previewUrl, attempt, backend, cancelFade])
+  }, [isPlaying, current?.previewUrl, attempt, backend, ytActive, cancelFade])
 
   // Progress, the crossfade trigger, and the end-of-clip safety net.
   useEffect(() => {
-    if (backend !== 'preview') return
+    if (ytActive || backend === 'apple') return
     const nodes = [aRef.current, bRef.current].filter(Boolean)
     const onTime = (e) => {
       if (e.target !== activeEl()) return
@@ -262,7 +291,7 @@ export function PlayerProvider({ children }) {
         n.removeEventListener('pause', onPause)
       }
     }
-  }, [backend, beginCrossfade, next])
+  }, [backend, ytActive, beginCrossfade, next])
 
   useEffect(() => () => cancelFade(), [cancelFade])
 
@@ -426,7 +455,11 @@ export function PlayerProvider({ children }) {
     if (backend !== 'youtube' || !ytReady) return
     const player = ytRef.current
     if (!player?.loadVideoById) return
-    if (!current?.youtubeId) { next(); return }
+    if (!current?.youtubeId) {
+      // No verified video for this one — hand it back to the preview clip.
+      try { player.stopVideo?.() } catch { /* already stopped */ }
+      return
+    }
     try {
       player.loadVideoById(current.youtubeId)
       if (!isPlaying) player.pauseVideo?.()
@@ -435,17 +468,17 @@ export function PlayerProvider({ children }) {
   }, [backend, ytReady, current?.youtubeId])
 
   useEffect(() => {
-    if (backend !== 'youtube' || !ytReady) return
+    if (!ytActive || !ytReady) return
     const player = ytRef.current
     try {
       if (isPlaying) player?.playVideo?.()
       else player?.pauseVideo?.()
     } catch { /* not ready yet */ }
-  }, [backend, ytReady, isPlaying])
+  }, [ytActive, ytReady, isPlaying])
 
   // Poll the player for progress; the IFrame API has no timeupdate event.
   useEffect(() => {
-    if (backend !== 'youtube' || !ytReady) return
+    if (!ytActive || !ytReady) return
     const id = setInterval(() => {
       const player = ytRef.current
       try {
@@ -455,7 +488,7 @@ export function PlayerProvider({ children }) {
       } catch { /* transient */ }
     }, 400)
     return () => clearInterval(id)
-  }, [backend, ytReady])
+  }, [ytActive, ytReady])
 
   // OS media keys and the lock screen.
   useEffect(() => {
@@ -475,17 +508,17 @@ export function PlayerProvider({ children }) {
   const value = useMemo(
     () => ({
       queue, queueKey, index, current, isPlaying, progress, duration, needsGesture,
-      loadQueue, playAt, next, prev, toggle, seek,
+      loadQueue, playAt, next, prev, toggle, seek, nudge,
       fraction: duration ? progress / duration : 0,
-      backend,
-      fullSongs: backend === 'apple' || backend === 'youtube',
+      backend, ytActive,
+      fullSongs: backend === 'apple' || ytActive,
       canOfferFullSongs: hasDeveloperToken(),
       upgrading, upgradeError, enableFullSongs, disableFullSongs,
       youtubeAvailable, enableYouTube, disableYouTube, ytMountId,
     }),
     [queue, queueKey, index, current, isPlaying, progress, duration, needsGesture,
-     loadQueue, playAt, next, prev, toggle, seek,
-     backend, upgrading, upgradeError, enableFullSongs, disableFullSongs,
+     loadQueue, playAt, next, prev, toggle, seek, nudge,
+     backend, ytActive, upgrading, upgradeError, enableFullSongs, disableFullSongs,
      youtubeAvailable, enableYouTube, disableYouTube, ytMountId],
   )
 

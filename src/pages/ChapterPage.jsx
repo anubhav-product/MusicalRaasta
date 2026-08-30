@@ -7,7 +7,7 @@ import NowPlaying from '../components/NowPlaying.jsx'
 import QueueSheet from '../components/QueueSheet.jsx'
 import MiniPlayer from '../components/MiniPlayer.jsx'
 import { usePlayer } from '../player/context.js'
-import { useScrollIntent } from '../hooks/useScrollIntent.js'
+import ControlHint from '../components/ControlHint.jsx'
 import {
   chapterImages, getChapter, getRoad, hindiFor, motionFor, nextStop, prevStop, typeFor,
 } from '../lib/roads.js'
@@ -42,7 +42,32 @@ export default function ChapterPage({ roadId }) {
 
   const openQueue = useCallback(() => setQueueOpen(true), [])
   const closeQueue = useCallback(() => setQueueOpen(false), [])
-  useScrollIntent({ onReveal: openQueue, enabled: !!chapter && !queueOpen })
+
+  // Images sit in the middle 80% of the scroll track, so stepping between them never
+  // lands on the title card or the outro.
+  const imageCount = images.length || 1
+  const imageIndex = Math.min(
+    imageCount - 1,
+    Math.max(0, Math.round(Math.min(1, Math.max(0, (progress - 0.1) / 0.8)) * (imageCount - 1))),
+  )
+  const goToImage = useCallback((i) => {
+    const clamped = Math.max(0, Math.min(imageCount - 1, i))
+    const within = imageCount > 1 ? clamped / (imageCount - 1) : 0
+    const target = (0.1 + within * 0.8) * (document.body.scrollHeight - window.innerHeight)
+    window.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' })
+  }, [imageCount, reduced])
+
+  // Left/right steps the imagery; space toggles playback.
+  useEffect(() => {
+    if (queueOpen) return
+    const onKey = (e) => {
+      if (e.target.closest?.('input, textarea, [contenteditable]')) return
+      if (e.key === 'ArrowRight') { e.preventDefault(); goToImage(imageIndex + 1) }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goToImage(imageIndex - 1) }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [goToImage, imageIndex, queueOpen])
 
   if (!chapter) return <Navigate to={road.base} replace />
 
@@ -237,17 +262,23 @@ export default function ChapterPage({ roadId }) {
           </div>
         </div>
 
-        {/* scroll-up affordance */}
+        {/* how this page works */}
         <AnimatePresence>
-          {!queueOpen && hero.opacity > 0.6 && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-x-0 bottom-[4.5rem] text-center text-[10px] tracking-[0.24em] uppercase text-white/30"
+          {!queueOpen && progress > 0.06 && progress < 0.94 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="absolute inset-x-0 bottom-[4.75rem] flex justify-center"
             >
-              Scroll up for the queue
-            </motion.p>
+              <ControlHint
+                accent={accent}
+                imageIndex={imageIndex}
+                imageCount={imageCount}
+                onPrev={() => goToImage(imageIndex - 1)}
+                onNext={() => goToImage(imageIndex + 1)}
+              />
+            </motion.div>
           )}
         </AnimatePresence>
       </ChapterBackdrop>

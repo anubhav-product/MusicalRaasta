@@ -39,8 +39,8 @@ export function loadYouTubeApi() {
 }
 
 /**
- * Only treat a chapter as playable in full when EVERY track has a resolved video.
- * A partly-resolved chapter would silently skip the songs that have none, which is a
- * worse experience than playing the whole chapter as previews until resolution finishes.
+ * A chapter uses YouTube as soon as ANY of its songs has a verified video. Playback is
+ * decided per track, not per chapter: verified songs stream in full, and a song still
+ * awaiting a match falls back to its preview clip rather than being skipped.
  */
-export const hasYouTube = (queue) => queue.length > 0 && queue.every((t) => t.youtubeId)
+export const hasYouTube = (queue) => queue.some((t) => t.youtubeId)

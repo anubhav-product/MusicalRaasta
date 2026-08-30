@@ -190,6 +190,10 @@ export function typeFor(roadId) {
 export const SITE = {
   title: 'Annu',
   coffee: 'https://www.buymeacoffee.com/',
+  // The site is named twice over in Hindi. रास्ता is the road it is built as; अनुभव is the
+  // word for experience — and the name of the person whose experience picked the songs.
+  // Both spellings travel together: the Devanagari is the name, the roman is the gloss.
+  author: { name: 'Anubhav', deva: 'अनुभव' },
 }
 
 /** Every stop on both roads, in travel order, tagged with the road it belongs to. */

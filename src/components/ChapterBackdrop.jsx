@@ -42,6 +42,11 @@ export default function ChapterBackdrop({ images, palette, mode = 'drift', onPro
       const n = frames.length
       const [deep, signature, light] = palette
 
+      // Images occupy the middle of the scroll; the ends belong to the title and outro.
+      const IMG_FROM = 0.1
+      const IMG_TO = 0.9
+      const imgProgress = (p) => gsap.utils.clamp(0, 1, (p - IMG_FROM) / (IMG_TO - IMG_FROM))
+
       if (mode === 'cut') {
         frames.forEach((el, i) => gsap.set(el, { opacity: i === 0 ? 1 : 0, scale: 1 }))
         let currentFrame = -1
@@ -61,7 +66,7 @@ export default function ChapterBackdrop({ images, palette, mode = 'drift', onPro
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             onProgress?.(self.progress)
-            const i = Math.min(n - 1, Math.floor(self.progress * n))
+            const i = Math.min(n - 1, Math.floor(imgProgress(self.progress) * n))
             if (i !== currentFrame) { currentFrame = i; cutTo(i) }
             if (tintRef.current) {
               tintRef.current.style.background =
@@ -92,7 +97,7 @@ export default function ChapterBackdrop({ images, palette, mode = 'drift', onPro
         onUpdate: (self) => {
           const p = self.progress
           onProgress?.(p)
-          const pos = p * (n - 1)
+          const pos = imgProgress(p) * (n - 1)
           frames.forEach((el, i) => {
             const d = Math.abs(pos - i)
             const local = gsap.utils.clamp(0, 1, 1 - d)
